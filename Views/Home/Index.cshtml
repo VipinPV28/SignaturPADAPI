@@ -1,0 +1,138 @@
+﻿@model SignaturPADAPI.Models.ModelClass
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.3.4/signature_pad.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.3.4/signature_pad.min.js"></script>
+
+
+
+
+<script>
+    $(document).ready(function () {
+
+
+        var canvas = document.querySelector('#signature');
+        var pad = new SignaturePad(canvas);
+
+
+        $('#btnsubmit').click(function () {
+
+            //var data = pad.toDataURL();
+
+            //$('#savetarget').attr('src', data);
+            //$('#SignatureDataUrl').val(data);
+            //pad.off();
+
+
+
+            var empobj = {
+
+                name: $('#txtusername').val(),
+                Email: $('#txtemail').val(),
+                phone: $('#txtphne ').val(),
+                Image: pad.toDataURL()
+            };
+
+            $.ajax({
+                url: 'sign/submit',
+                method: 'post',
+
+                data: '{emp:' + JSON.stringify(empobj) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function () {
+                    alert("hello");
+                    getAllEmployees();
+                    console.log(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+        function getAllEmployees() {
+            $.ajax({
+                url: 'sign/getemplst',
+                dataType: "json",
+                method: 'GET',
+                success: function (data) {
+                    var employeeTable = $('#employee tbody');
+                    employeeTable.empty();
+
+                    $(data).each(function (index, emp) {
+                        employeeTable.append('<tr><td>' + emp.name + '</td><td>'
+                            + emp.Email + '</td><td>'
+                            + emp.Phone +
+                            '</td><td>' + emp.Image + '</td></tr>');
+
+                    });
+
+                },
+                error: function (err) {
+                    console.log(err);
+
+                }
+            });
+
+        }
+
+    });
+
+
+         
+
+</script>
+<div>
+    <table>
+        <tr><th colspan="2">Employee Registration</th></tr>
+        <tr>
+
+            <td>Name</td>
+            <td><input type="text" id="txtusername" /></td>
+        </tr>
+        <tr><td>Email</td><td><input type="text" id="txtemail" /></td></tr>
+        <tr>
+            <td>phone</td>
+            <td>
+                <input ="tel" id="txtphne" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <canvas width="500" height="400" id="signature"
+                        style="border:1px solid black"></canvas>
+            </td>
+        </tr>
+        <tr><td></td><td><input type="submit" id="btnsubmit" /></td></tr>
+    </table>
+
+    <table id="employee" class="table table-bordered" style="margin-top:10px;">
+
+        <thead class="bg-danger text-center text-white">
+
+            <tr>
+
+                
+
+                <th>Name</th>
+
+                <th>Email</th>
+
+                <th>Phone</th>
+
+                <td>Signature</td>
+
+            </tr>
+
+        </thead>
+
+        <tbody></tbody>
+
+    </table>
+
+</div>
